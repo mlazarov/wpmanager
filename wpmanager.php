@@ -46,7 +46,7 @@ function define_wpmanager_xmlrpc_class(){
 
 			$data = array('all'=>get_plugins(),'active'=>get_option('active_plugins'));
 
-			$data = get_site_transient( 'update_core' );
+			$data['updates'] = get_site_transient( 'update_core' );
 
 			return $data;
 
