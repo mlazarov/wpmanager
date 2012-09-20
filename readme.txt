@@ -33,6 +33,8 @@ so I can update it more easly.
 
 
 == Changelog ==
+= 1.0.1 =
+* Fixing getPlugins missing data issue
 
 = 1.0.0 =
 * Initial version

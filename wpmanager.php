@@ -4,7 +4,7 @@ Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
 Description: WPmanager extends basic functionalities of wordpress xmlprc required for wpmanager.biz
-Version: 1.0.0
+Version: 1.0.1
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
