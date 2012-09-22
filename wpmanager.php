@@ -3,8 +3,8 @@
 Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
-Description: WPmanager extends basic functionalities of wordpress xmlprc required for wpmanager.biz
-Version: 1.0.1
+Description: WP Manager extends basic functionalities of wordpress XMLPRC required for wpmanager.biz
+Version: 1.0.2
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
@@ -59,6 +59,7 @@ function define_wpmanager_xmlrpc_class(){
 			if ( ! current_user_can('update_themes')){
 				return(new IXR_Error(401, __('Sorry, you cannot manage this blog [2].')));
 			}
+			return wp_get_themes();
 		}
 
 		function wpm_getPostsCount($args){
