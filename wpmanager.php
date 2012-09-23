@@ -4,12 +4,13 @@ Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
 Description: WP Manager extends basic functionalities of wordpress XMLPRC required for <a href="https://wpmanager.biz/">wpmanager.biz</a>
-Version: 1.0.4
+Version: 1.0.4.1
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
 
 function define_wpmanager_xmlrpc_class(){
+
 	class WPManager_XMLRPC extends wp_xmlrpc_server {
 		public function __construct() {
 	        parent::__construct();
@@ -111,34 +112,9 @@ function define_wpmanager_xmlrpc_class(){
 			}
 			$return = array('error'=>false);
 
-			if(!file_exists(ABSPATH.'wp-admin/includes/class-wp-upgrader.php'))
-				return(new IXR_Error(501, __('Sorry, core update not supported [1].')));
-
-			require_once(ABSPATH.'wp-admin/includes/class-wp-upgrader.php');
-
-			if(!file_exists(ABSPATH . 'wp-admin/includes/admin.php'))
-				return(new IXR_Error(501, __('Sorry, core update not supported [2].')));
-
-			include_once(ABSPATH . 'wp-admin/includes/admin.php');
 
 			if(!class_exists('Core_Upgrader'))
 				return(new IXR_Error(501, __('Sorry, core update not supported [3].')));
-
-			class WPM_Core_Upgrader_Skin extends WP_Upgrader_Skin {
-				var $feedback;
-				var $error;
-
-				function error($error) {
-					$this->error = $error;
-				}
-				function feedback($feedback){
-					$this->feedback = $feedback;
-				}
-				function before() {}
-				function after() {}
-				function header() {}
-				function footer() {}
-			}
 
 			$wpm_skin = new WPM_Core_Upgrader_Skin();
 			$wpm_upgrader = new Core_Upgrader($wpm_skin);
@@ -193,6 +169,35 @@ function define_wpmanager_xmlrpc_class(){
 
 		}
 	}
+
+	if(!file_exists(ABSPATH.'wp-admin/includes/class-wp-upgrader.php'))
+		return(new IXR_Error(501, __('Sorry, core update not supported [1].')));
+
+	require_once(ABSPATH.'wp-admin/includes/class-wp-upgrader.php');
+
+	if(!file_exists(ABSPATH . 'wp-admin/includes/admin.php'))
+		return(new IXR_Error(501, __('Sorry, core update not supported [2].')));
+
+	include_once(ABSPATH . 'wp-admin/includes/admin.php');
+
+	class WPM_Core_Upgrader_Skin extends WP_Upgrader_Skin {
+		var $feedback;
+		var $error;
+
+		function error($error) {
+			$this->error = $error;
+		}
+		function feedback($feedback){
+			$this->feedback = $feedback;
+		}
+		function before() {}
+		function after() {}
+		function header() {}
+		function footer() {}
+	}
+
+
+
 	return 'WPManager_XMLRPC';
 
 }
