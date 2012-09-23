@@ -33,10 +33,10 @@ so I can update it more easly.
 
 
 == Changelog ==
-= 1.0.4.1 = 
-* Fixing class includes
 = 1.0.4 =
 * Adding wpm_updateCore
+* Fixing class includes
+* Fixing wpm_updateCore issues
 = 1.0.3 =
 * Adding wpm_getSystemInfo
 = 1.0.2 =
