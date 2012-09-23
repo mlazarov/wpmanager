@@ -2,7 +2,7 @@
 Tags: wordpress remote management
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.0.2
+Stable tag: 1.0.4
 Contributors: mlazarov
 
 WP Manager extends basic functionality of Wordress XMLRPC protocol for better experience on wpmanager.biz
@@ -33,12 +33,14 @@ so I can update it more easly.
 
 
 == Changelog ==
+= 1.0.4 =
+* Adding wpm_updateCore
+= 1.0.3 =
+* Adding wpm_getSystemInfo
 = 1.0.2 =
 * Adding wpm_getThemes data
-
 = 1.0.1 =
 * Fixing getPlugins missing data issue
-
 = 1.0.0 =
 * Initial version
 

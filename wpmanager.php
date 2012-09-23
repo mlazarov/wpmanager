@@ -3,8 +3,8 @@
 Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
-Description: WP Manager extends basic functionalities of wordpress XMLPRC required for wpmanager.biz
-Version: 1.0.2
+Description: WP Manager extends basic functionalities of wordpress XMLPRC required for <a href="https://wpmanager.biz/">wpmanager.biz</a>
+Version: 1.0.4
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
@@ -27,6 +27,7 @@ function define_wpmanager_xmlrpc_class(){
 				'wpm.getCommentsCount'	=>	'this:wpm_getCommentsCount',
 				'wpm.getPlugins'		=>	'this:wpm_getPlugins',
 				'wpm.getThemes'			=>	'this:wpm_getThemes',
+				'wpm.getSystemInfo'		=>	'this:wpm_getSystemInfo',
 				'wpm.getTest'			=>	'this:wpm_getTest',
 	        );
 
@@ -84,6 +85,96 @@ function define_wpmanager_xmlrpc_class(){
 			return wp_count_comments();
 		}
 
+		function wpm_getSystemInfo($args){
+			$this->escape( $args );
+			if ( ! $user = $this->_checkLogin($args) )
+				return $this->error;
+			if ( ! current_user_can('update_core')){
+				return(new IXR_Error(401, __('Sorry, you cannot manage this blog [5].')));
+			}
+
+			$data = array();
+			$data['loadavg'] = explode(' ',@file_get_contents('/proc/loadavg'));
+			$data['meminfo'] = file_get_contents('/proc/meminfo');
+			$data['diskinfo']['total'] = @disk_total_space(__DIR__);
+			$data['diskinfo']['free'] = @disk_free_space(__DIR__);
+			$data['cpus'] = `grep -c processor /proc/cpuinfo`;
+
+			return $data;
+		}
+		function wpm_updateCore($args){
+			$this->escape( $args );
+			if ( ! $user = $this->_checkLogin($args) )
+				return $this->error;
+			if ( ! current_user_can('update_core')){
+				return(new IXR_Error(401, __('Sorry, you cannot manage this blog [6].')));
+			}
+			$return = array('error'=>false);
+
+			if(!file_exists(ABSPATH.'wp-admin/includes/class-wp-upgrader.php'))
+				return(new IXR_Error(501, __('Sorry, core update not supported [1].')));
+
+			require_once(ABSPATH.'wp-admin/includes/class-wp-upgrader.php');
+
+			if(!file_exists(ABSPATH . 'wp-admin/includes/admin.php'))
+				return(new IXR_Error(501, __('Sorry, core update not supported [2].')));
+
+			include_once(ABSPATH . 'wp-admin/includes/admin.php');
+
+			if(!class_exists('Core_Upgrader'))
+				return(new IXR_Error(501, __('Sorry, core update not supported [3].')));
+
+			class WPM_Core_Upgrader_Skin extends WP_Upgrader_Skin {
+				var $feedback;
+				var $error;
+
+				function error($error) {
+					$this->error = $error;
+				}
+				function feedback($feedback){
+					$this->feedback = $feedback;
+				}
+				function before() {}
+				function after() {}
+				function header() {}
+				function footer() {}
+			}
+
+			$wpm_skin = new WPM_Core_Upgrader_Skin();
+			$wpm_upgrader = new Core_Upgrader($wpm_skin);
+
+
+			$updates = get_core_updates();
+			$update = find_core_update($updates[0]->current, $updates[0]->locale);
+
+			// Do the upgrade
+			ob_start();
+			$result = $wpm_upgrader->upgrade($update);
+			$data = ob_get_contents();
+			ob_clean();
+
+			if($wpm_skin->error){
+				$return['errorn'] = 501;
+				$return['message'] = $skin->upgrader->strings[$wpm_skin->error];
+				return $return;
+			}
+			if(!$result){
+				$return['errorn'] = 501;
+				$return['message'] = "Core Update Failder for unknow reason [1]";
+				return $return;
+			}
+
+			if(is_wp_error($result)){
+				$return['errorn'] = $result->get_error_code();
+				$return['message'] = $result->get_error_message();
+				return $return;
+
+			}
+			$return['data'] = $data;
+			$return['message'] = "Upgrade complete. No errors detected";
+			return $return;
+		}
+
 //		function wpm_getTest($args){
 //			return get_plugin_updates();
 //			//return get_declared_classes();
@@ -120,4 +211,5 @@ function wpmanager_blog_options($blog_info){
 }
 
 add_action('xmlrpc_blog_options', 'wpmanager_blog_options');
+
 ?>
