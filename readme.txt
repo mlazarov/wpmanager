@@ -33,7 +33,7 @@ so I can update it more easly.
 
 
 == Changelog ==
-= 1.0.4 =
+= 1.0.5 =
 * Adding wpm_updatePlugin
 = 1.0.4 =
 * Adding wpm_updateCore
