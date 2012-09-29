@@ -4,7 +4,7 @@ Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
 Description: WP Manager extends basic functionalities of wordpress XMLPRC required for <a href="http://wpmanager.biz/" target="_blank">wpmanager.biz</a>
-Version: 1.0.4.2
+Version: 1.0.5
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
@@ -30,6 +30,7 @@ function define_wpmanager_xmlrpc_class(){
 				'wpm.getThemes'			=>	'this:wpm_getThemes',
 				'wpm.getSystemInfo'		=>	'this:wpm_getSystemInfo',
 				'wpm.updateCore'		=>	'this:wpm_updateCore',
+				'wpm.updatePlugin'		=>	'this:wpm_updatePlugin',
 				'wpm.getTest'			=>	'this:wpm_getTest',
 	        );
 
@@ -130,9 +131,59 @@ function define_wpmanager_xmlrpc_class(){
 			$data = ob_get_contents();
 			ob_clean();
 
+			$return['result'] = $result;
+
 			if($wpm_skin->error){
 				$return['errorn'] = 501;
-				$return['message'] = $skin->upgrader->strings[$wpm_skin->error];
+				$return['message'] = $wpm_skin->upgrader->strings[$wpm_skin->error];
+				return $return;
+			}
+			if(!$result){
+				$return['errorn'] = 501;
+				$return['message'] = "Core Update Failder for unknow reason [1]";
+				return $return;
+			}
+
+			if(is_wp_error($result)){
+				$return['errorn'] = $result->get_error_code();
+				$return['message'] = $result->get_error_message();
+				return $return;
+			}
+			$return['data'] = $data;
+			$return['message'] = "Upgrade complete. No errors detected";
+
+			return $return;
+		}
+		function wpm_updatePlugin($args){
+			$this->escape( $args );
+			if ( ! $user = $this->_checkLogin($args) )
+				return $this->error;
+			if ( ! current_user_can('update_plugins')){
+				return(new IXR_Error(401, __('Sorry, you cannot manage this blog [7].')));
+			}
+			$return = array('error'=>false);
+
+			if(!class_exists('Plugin_Upgrader'))
+				return(new IXR_Error(501, __('Sorry, plugins update not supported [1].')));
+
+			$plugin = $args[4];
+
+			$wpm_skin = new WPS_Plugin_Upgrader_Skin();
+			$wpm_upgrader = new Plugin_Upgrader($wpm_skin);
+			$is_active = is_plugin_active($plugin);
+
+			# Upgrade plugin
+			ob_start();
+			$result = $wpm_upgrader->upgrade($plugin);
+			$data = ob_get_contents();
+			ob_clean();
+			wp_update_plugins();
+
+			$return['result'] = $result;
+
+			if($wpm_skin->error){
+				$return['errorn'] = 501;
+				$return['message'] = $wpm_skin->upgrader->strings[$wpm_skin->error];
 				return $return;
 			}
 			if(!$result){
@@ -196,6 +247,27 @@ function define_wpmanager_xmlrpc_class(){
 		function header() {}
 		function footer() {}
 	}
+
+	class WPM_Plugin_Installer_Skin extends Plugin_Installer_Skin {
+	var $feedback;
+	var $error;
+
+	function error($error) {
+		$this->error = $error;
+	}
+
+	function feedback($feedback) {
+		$this->feedback = $feedback;
+	}
+
+	function before() {}
+
+	function after() {}
+
+	function header() {}
+
+	function footer() {}
+}
 
 
 
