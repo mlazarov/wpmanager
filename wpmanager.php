@@ -4,7 +4,7 @@ Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
 Description: WP Manager extends basic functionalities of wordpress XMLPRC required for <a href="http://wpmanager.biz/" target="_blank">wpmanager.biz</a>
-Version: 1.0.5
+Version: 1.0.6
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
@@ -25,7 +25,7 @@ function define_wpmanager_xmlrpc_class(){
 
 			$methods = array(
 				'wpm.getPostsCount'		=>	'this:wpm_getPostsCount',
-				'wpm.getCommentsCount'	=>	'this:wpm_getCommentsCount',
+				'wpm.getCommentsCount'		=>	'this:wpm_getCommentsCount',
 				'wpm.getPlugins'		=>	'this:wpm_getPlugins',
 				'wpm.getThemes'			=>	'this:wpm_getThemes',
 				'wpm.getSystemInfo'		=>	'this:wpm_getSystemInfo',
@@ -166,11 +166,27 @@ function define_wpmanager_xmlrpc_class(){
 			if(!class_exists('Plugin_Upgrader'))
 				return(new IXR_Error(501, __('Sorry, plugins update not supported [1].')));
 
-			$plugin = $args[4];
+			$plugin = $args[3];
 
-			$wpm_skin = new WPS_Plugin_Upgrader_Skin();
+			delete_site_transient('update_plugins');
+			wp_update_plugins();
+			$updates = get_site_transient( 'update_plugins' );
+
+			if($updates->response[$plugin]){
+				$return['current'] = $updates->response[$plugin];
+			}else{
+				$return['errorn'] = 301;
+				$return['message'] = "No updates found";
+				return $return;
+			}
+
+			$return['args'] = $args;
+			$return['plugin'] = $plugin;
+
+			$return['plugin_status'] = is_plugin_active($plugin);
+
+			$wpm_skin = new WPM_Plugin_Installer_Skin();
 			$wpm_upgrader = new Plugin_Upgrader($wpm_skin);
-			$is_active = is_plugin_active($plugin);
 
 			# Upgrade plugin
 			ob_start();
@@ -180,15 +196,16 @@ function define_wpmanager_xmlrpc_class(){
 			wp_update_plugins();
 
 			$return['result'] = $result;
+			$return['data'] = $data;
 
 			if($wpm_skin->error){
 				$return['errorn'] = 501;
 				$return['message'] = $wpm_skin->upgrader->strings[$wpm_skin->error];
 				return $return;
 			}
-			if(!$result){
+			if(!$result && !is_null($result) || $data){
 				$return['errorn'] = 501;
-				$return['message'] = "Core Update Failder for unknow reason [1]";
+				$return['message'] = "Plugin update FAILED for unknow reason [1]";
 				return $return;
 			}
 
@@ -196,9 +213,8 @@ function define_wpmanager_xmlrpc_class(){
 				$return['errorn'] = $result->get_error_code();
 				$return['message'] = $result->get_error_message();
 				return $return;
-
 			}
-			$return['data'] = $data;
+
 			$return['message'] = "Upgrade complete. No errors detected";
 			return $return;
 		}

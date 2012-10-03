@@ -2,10 +2,25 @@
 Tags: wordpress remote management
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 Contributors: mlazarov
 
-WP Manager extends basic functionality of Wordress XMLRPC protocol for better experience on wpmanager.biz
+WP Manager extends basic functionality of Wordress XMLRPC protocol for better experience on <a href="http://wmmanager.biz">wpmanager.biz</a>
+
+With WP Manager you can manage your blogs from one place without need to walk to all your blogs to check for updates.
+
+
+= WP Manager features =
+* Watch all your blogs for updates
+* Update Core
+
+
+= Soon you will have also =
+* Update themes
+* Update plugins
+* many cool features
+
+To use this plugin you have to create account at <a href="http://wmmanager.biz">wpmanager.biz</a> and add your blog.
 
 == Description ==
 
@@ -33,6 +48,8 @@ so I can update it more easly.
 
 
 == Changelog ==
+= 1.0.6 =
+* Adding wpm_updatePlugins and updating plugin description
 = 1.0.5 =
 * Adding wpm_updatePlugin
 = 1.0.4 =
