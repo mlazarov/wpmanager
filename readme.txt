@@ -5,7 +5,7 @@ Tested up to: 3.4.1
 Stable tag: 1.0.6
 Contributors: mlazarov
 
-WP Manager extends basic functionality of Wordress XMLRPC protocol for better experience on <a href="http://wmmanager.biz">wpmanager.biz</a>
+WP Manager extends basic functionality of Wordress XMLRPC protocol for better experience on <a href="http://wpmanager.biz" target="_blank">wpmanager.biz</a>
 
 With WP Manager you can manage your blogs from one place without need to walk to all your blogs to check for updates.
 
@@ -20,7 +20,7 @@ With WP Manager you can manage your blogs from one place without need to walk to
 * Update plugins
 * many cool features
 
-To use this plugin you have to create account at <a href="http://wmmanager.biz">wpmanager.biz</a> and add your blog.
+To use this plugin you have to create account at <a href="http://wpmanager.biz" target="_blank">wpmanager.biz</a> and add your blog.
 
 == Description ==
 
