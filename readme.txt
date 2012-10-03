@@ -10,12 +10,12 @@ WP Manager extends basic functionality of Wordress XMLRPC protocol for better ex
 With WP Manager you can manage your blogs from one place without need to walk to all your blogs to check for updates.
 
 
-= WP Manager features =
+* WP Manager features *
 * Watch all your blogs for updates
 * Update Core
 
 
-= Soon you will have also =
+* Soon you will have also *
 * Update themes
 * Update plugins
 * many cool features
