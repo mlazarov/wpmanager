@@ -2,7 +2,7 @@
 Tags: wordpress remote management
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.0.8
+Stable tag: 1.1.0
 Contributors: mlazarov
 
 WP Manager allows you to manage all your blogs from one place - wpmanager.biz
@@ -47,6 +47,8 @@ so I can update it more easly.
 
 
 == Changelog ==
+= 1.0.9 =
+* 
 = 1.0.8 =
 * Adding auto activete after plugin update if plugins was active before update
 = 1.0.7 =
@@ -69,6 +71,7 @@ so I can update it more easly.
 * Initial version
 
 == Screenshots ==
-
-No screenshots are available.
+1. Easy plugin update
+2. Easy to add new blogs
+3. Blogs dashboard to controll and view all of your blogs
 
