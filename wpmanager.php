@@ -195,6 +195,13 @@ function define_wpmanager_xmlrpc_class(){
 			ob_clean();
 			wp_update_plugins();
 
+			if($return['plugin_status']){
+				ob_start();
+				$data['plugin_activate'] = activate_plugin($plugin);
+				$data['plugin_activate_data'] = ob_get_contents();
+				ob_clean();
+			}
+
 			$return['result'] = $result;
 			$return['data'] = $data;
 
@@ -204,7 +211,7 @@ function define_wpmanager_xmlrpc_class(){
 				return $return;
 			}
 			if(!$result && !is_null($result) || $data){
-				$return['errorn'] = 501;
+				$return['errorn'] = 502;
 				$return['message'] = "Plugin update FAILED for unknow reason [1]";
 				return $return;
 			}
