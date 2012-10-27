@@ -4,7 +4,7 @@ Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
 Description: WP Manager extends basic functionalities of wordpress XMLPRC required for <a href="http://wpmanager.biz/" target="_blank">wpmanager.biz</a>
-Version: 1.1.1
+Version: 1.1.2
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
@@ -134,17 +134,20 @@ function define_wpmanager_xmlrpc_class(){
 			$return['result'] = $result;
 
 			if($wpm_skin->error){
+				$return['error'] = true;
 				$return['errorn'] = 501;
 				$return['message'] = $wpm_skin->upgrader->strings[$wpm_skin->error];
 				return $return;
 			}
 			if(!$result){
+				$return['error'] = true;
 				$return['errorn'] = 501;
 				$return['message'] = "Core Update Failder for unknow reason [1]";
 				return $return;
 			}
 
 			if(is_wp_error($result)){
+				$return['error'] = true;
 				$return['errorn'] = $result->get_error_code();
 				$return['message'] = $result->get_error_message();
 				return $return;
@@ -175,6 +178,7 @@ function define_wpmanager_xmlrpc_class(){
 			if($updates->response[$plugin]){
 				$return['current'] = $updates->response[$plugin];
 			}else{
+				$return['error'] = true;
 				$return['errorn'] = 301;
 				$return['message'] = "No updates found";
 				return $return;
@@ -206,23 +210,27 @@ function define_wpmanager_xmlrpc_class(){
 			$return['data'] = $data;
 
 			if($wpm_skin->error){
+				$return['error'] = true;
 				$return['errorn'] = 501;
 				$return['message'] = $wpm_skin->upgrader->strings[$wpm_skin->error];
 				return $return;
 			}
 			if(stristr($data['plugin_upgrade'],'hostname') && stristr($data['plugin_upgrade'],'username') && stristr($data['plugin_upgrade'],'password')){
 				$return['data'] = 'Removed due xml sucks';
+				$return['error'] = true;
 				$return['errorn'] = 502;
 				$return['message'] = "File permissions ERROR [1]";
 				return $return;
 			}
 			if(!$result && !is_null($result) || $data['plugin_upgrade']){
+				$return['error'] = true;
 				$return['errorn'] = 503;
 				$return['message'] = "Plugin update FAILED for unknow reason [1]";
 				return $return;
 			}
 
 			if(is_wp_error($result)){
+				$return['error'] = true;
 				$return['errorn'] = $result->get_error_code();
 				$return['message'] = $result->get_error_message();
 				return $return;
