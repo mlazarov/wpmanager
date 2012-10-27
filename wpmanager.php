@@ -4,7 +4,7 @@ Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
 Description: WP Manager extends basic functionalities of wordpress XMLPRC required for <a href="http://wpmanager.biz/" target="_blank">wpmanager.biz</a>
-Version: 1.1.0
+Version: 1.1.1
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
@@ -191,7 +191,7 @@ function define_wpmanager_xmlrpc_class(){
 			# Upgrade plugin
 			ob_start();
 			$result = $wpm_upgrader->upgrade($plugin);
-			$data = ob_get_contents();
+			$data['plugin_upgrade'] = ob_get_contents();
 			ob_clean();
 			wp_update_plugins();
 
@@ -210,8 +210,14 @@ function define_wpmanager_xmlrpc_class(){
 				$return['message'] = $wpm_skin->upgrader->strings[$wpm_skin->error];
 				return $return;
 			}
-			if(!$result && !is_null($result) || $data){
+			if(stristr($data['plugin_upgrade'],'hostname') && stristr($data['plugin_upgrade'],'username') && stristr($data['plugin_upgrade'],'password')){
+				$return['data'] = 'Removed due xml sucks';
 				$return['errorn'] = 502;
+				$return['message'] = "File permissions ERROR [1]";
+				return $return;
+			}
+			if(!$result && !is_null($result) || $data['plugin_upgrade']){
+				$return['errorn'] = 503;
 				$return['message'] = "Plugin update FAILED for unknow reason [1]";
 				return $return;
 			}
