@@ -4,7 +4,7 @@ Plugin Name: WP Manager
 Plugin Script: wpmanager.php
 Plugin URI: http://marto.lazarov.org/plugins/wpmanager
 Description: WP Manager extends basic functionalities of wordpress XMLPRC required for <a href="http://wpmanager.biz/" target="_blank">wpmanager.biz</a>
-Version: 1.1.2
+Version: 1.1.3
 Author: mlazarov
 Author URI: http://marto.lazarov.org/
 */
@@ -25,7 +25,7 @@ function define_wpmanager_xmlrpc_class(){
 
 			$methods = array(
 				'wpm.getPostsCount'		=>	'this:wpm_getPostsCount',
-				'wpm.getCommentsCount'		=>	'this:wpm_getCommentsCount',
+				'wpm.getCommentsCount'	=>	'this:wpm_getCommentsCount',
 				'wpm.getPlugins'		=>	'this:wpm_getPlugins',
 				'wpm.getThemes'			=>	'this:wpm_getThemes',
 				'wpm.getSystemInfo'		=>	'this:wpm_getSystemInfo',
@@ -101,7 +101,7 @@ function define_wpmanager_xmlrpc_class(){
 			$data['meminfo'] = file_get_contents('/proc/meminfo');
 			$data['diskinfo']['total'] = @disk_total_space(__DIR__);
 			$data['diskinfo']['free'] = @disk_free_space(__DIR__);
-			$data['cpus'] = `grep -c processor /proc/cpuinfo`;
+			$data['cpus'] = trim(`grep -c processor /proc/cpuinfo`);
 
 			return $data;
 		}
@@ -132,6 +132,7 @@ function define_wpmanager_xmlrpc_class(){
 			ob_clean();
 
 			$return['result'] = $result;
+			$return['data'] = $data;
 
 			if($wpm_skin->error){
 				$return['error'] = true;
@@ -139,9 +140,16 @@ function define_wpmanager_xmlrpc_class(){
 				$return['message'] = $wpm_skin->upgrader->strings[$wpm_skin->error];
 				return $return;
 			}
+			if(stristr($data,'hostname') && stristr($data,'username') && stristr($data,'password')){
+				$return['data'] = 'Removed due xml sucks';
+				$return['error'] = true;
+				$return['errorn'] = 502;
+				$return['message'] = "File permissions ERROR [1]";
+				return $return;
+			}
 			if(!$result){
 				$return['error'] = true;
-				$return['errorn'] = 501;
+				$return['errorn'] = 503;
 				$return['message'] = "Core Update Failder for unknow reason [1]";
 				return $return;
 			}
@@ -152,7 +160,7 @@ function define_wpmanager_xmlrpc_class(){
 				$return['message'] = $result->get_error_message();
 				return $return;
 			}
-			$return['data'] = $data;
+
 			$return['message'] = "Upgrade complete. No errors detected";
 
 			return $return;

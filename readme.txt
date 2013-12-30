@@ -2,7 +2,7 @@
 Tags: wordpress remote management
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 Contributors: mlazarov
 
 WP Manager allows you to manage all your blogs from one place - wpmanager.biz
@@ -47,6 +47,9 @@ so I can update it more easly.
 
 
 == Changelog ==
+= 1.1.3 =
+* Core update error tracking
+* Removed CPU's count extra spaces
 = 1.1.2 =
 * Adding error reporting flag
 = 1.1.1 =
